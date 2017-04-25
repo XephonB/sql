@@ -1,3 +1,3 @@
-select * from casa
-print 'hola 
-mundo'
+select * from casa where casas='adam'
+order by casa;
+print 'hola mundo';
