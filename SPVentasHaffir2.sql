@@ -7,11 +7,11 @@ AS BEGIN
 --SET @Ffinal='2017-08-12'
 ----borrar
 
-SELECT Importe,Saldo,FechaEmision,MovID,Mov,EnviarA,Nombre,
+SELECT Importe,Saldo,FechaEmision,Vencimiento,MovID,Mov,EnviarA,Nombre,
 'Estatus'=CASE WHEN EstatusCxc='' THEN Estatus ELSE EstatusCxc END,
 'MovPago'=CASE WHEN Condicion='Contado' THEN Condicion ELSE MovPago END,MovIDPago
  FROM(
-	SELECT (Venta.Importe+Venta.Impuestos)Importe,CAST(Venta.FechaEmision AS DATE)FechaEmision,Venta.MovID,Venta.Mov,ISNULL(Venta.EnviarA,'')EnviarA,ISNULL(CteEnviarA.Nombre,'')Nombre,Venta.Estatus,Venta.Condicion
+	SELECT (Venta.Importe+Venta.Impuestos)Importe,CAST(Venta.FechaEmision AS DATE)FechaEmision,CAST(Venta.Vencimiento AS date)Vencimiento,Venta.MovID,Venta.Mov,ISNULL(Venta.EnviarA,'')EnviarA,ISNULL(CteEnviarA.Nombre,'')Nombre,Venta.Estatus,Venta.Condicion
 	,ISNULL((SELECT C.Saldo FROM Cxc C WHERE C.MovID=Venta.MovID),'')Saldo
 	--,MF1.DID,MF1.DMovID--BORRAR
 	,ISNULL((SELECT Estatus FROM Cxc WHERE ID=MF1.DID),'')EstatusCxc
