@@ -1,10 +1,10 @@
---CREATE PROCEDURE CxpDispo @FechaD date, @FechaA date
+--CREATE PROCEDURE SP_ComprasMercanciaConsignacion @FechaD date, @FechaA date
 --AS BEGIN
 
 --Try me
 Declare @FechaD date, @FechaA date;
-SET @FechaD='01-01-2017'
-SET @FechaA='01-03-2017'
+SET @FechaD='01-01-2016'
+SET @FechaA='01-03-2018'
 --Try me
 
 	SELECT Cxp.Proveedor,Prov.Nombre,SUM(Cxp.Importe)Importe,LEFT(CAST(Cxp.FechaEmision AS date),7)FechaEmision FROM Cxp 
@@ -17,5 +17,5 @@ SET @FechaA='01-03-2017'
 --END
 
 /*
-EXEC CxpDispo @FechaD='01-01-2017, @FechaA='01-03-2017'
+EXEC SP_ComprasMercanciaConsignacion @FechaD='01-01-2017, @FechaA='01-03-2017'
 */
