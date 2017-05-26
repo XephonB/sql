@@ -1,4 +1,19 @@
-select ErpSendStatusID,ErpDocumentID,* from saledocument where Folio in('CHE139697','CHE139803','CHE139779')
---update SaleDocument set ErpSendStatusID=3,ErpDocumentID='AfectacionManual' where Folio in('NTE112802','CHA352639')
-select * from ErpErrorLog where TableID in(1315764,1315945)
---delete from ErpErrorLog where TableID in(1315764,1315945)
+USE SBX_Assis
+GO
+--DECLARE @Folio varchar(20)
+--set @Folio='CHE151638'
+--select ErpSendStatusID,ErpDocumentID,* from saledocument where Folio in('NTE130554')
+--select * from ErpErrorLog where TableID in(select ID from saledocument where Folio in(@Folio))
+--update SaleDocument set ErpSendStatusID=3,ErpDocumentID='AfectacionManual' where Folio in(@Folio)
+--delete from ErpErrorLog where TableID in(select ID from saledocument where Folio in(@Folio))
+
+SELECT saledocument.ErpSendStatusID,saledocument.ErpDocumentID,saledocument.Folio,saledocument.ID FROM saledocument 
+WHERE ID in(SELECT tableID FROM ErpErrorLog WHERE ErrorDescription like 'El Movimiento ya fue afectado por otro usuario Factura POS%')
+SELECT ID FROM ErpErrorLog WHERE ErrorDescription like 'El Movimiento ya fue afectado por otro usuario Factura POS%'
+--////////////////////////////Actualizacion y borrado del registro ///////////////////////////////////////////////////
+/*
+UPDATE SaleDocument set ErpSendStatusID=3,ErpDocumentID='AfectacionManual'
+WHERE ID in(SELECT tableID FROM ErpErrorLog WHERE ErrorDescription like 'El Movimiento ya fue afectado por otro usuario Factura POS%')
+DELETE from ErpErrorLog WHERE ErrorDescription like 'El Movimiento ya fue afectado por otro usuario Factura POS%'
+*/
+--////////////////////////////////////////FIN////////////////////////////////////////////////

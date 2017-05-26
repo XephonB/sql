@@ -1,4 +1,4 @@
-CREATE PROCEDURE SP_VentasHaffir2 @Finicio DATE, @Ffinal DATE
+alter PROCEDURE SP_VentasHaffir2 @Finicio DATE, @Ffinal DATE
 
 AS BEGIN
 ----borrar
@@ -19,7 +19,7 @@ SELECT Importe,Saldo,FechaEmision,Vencimiento,MovID,Mov,EnviarA,Nombre,
 		FROM Venta  LEFT JOIN CteEnviarA ON Venta.EnviarA=CteEnviarA.ID AND Venta.Cliente=CteEnviarA.Cliente
 		LEFT JOIN MovFlujo MF1 ON Venta.ID=MF1.OID AND Venta.Mov=MF1.OMov AND Venta.MovID=MF1.OMovID AND Venta.Mov=MF1.DMov AND MF1.Cancelado=0
 		LEFT JOIN MovFlujo MF2 ON MF1.DID=MF2.OID AND MF1.DMov=MF2.OMov AND MF1.DMovID=MF2.OMovID AND MF2.Cancelado=0
-		WHERE Venta.Cliente='PG001' AND Venta.Mov IN ('Factura','FacturaPromPzo Expo','Factura Mayoreo Inst','Factura Expo','Factura Prom. Plazo')
+		WHERE Venta.Cliente='PG001' AND Venta.Mov IN ('Factura','Factura PromPzo Expo','Factura Mayoreo Inst','Factura Expo','Factura Prom. Plazo')
 		AND CAST(Venta.FechaEmision AS date) BETWEEN @Finicio AND @Ffinal 
 )TFa
 ORDER BY FechaEmision,MovID --MAY26422 --1556574,MAY32316
