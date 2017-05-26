@@ -1,15 +1,15 @@
 
-CREATE PROCEDURE SP_ListaPrecioMayoreoArea  @Ram varchar(2)
+ALTER PROCEDURE SP_ListaPrecioMayoreoArea  @Ram varchar(2)
 AS BEGIN
---/*
+----/*
 --DECLARE @Ram varchar(2)
 --SET @Ram='01'
---*/
+----*/
 
 CREATE TABLE #ListaP(
 TArt varchar(20),TTT varchar(3),TDes varchar(100),TRam varchar(20),TCF varchar(50),
 TUni varchar(50),TFact float,TSubC varchar(50),TMM money,
-TPMay money,TPMayE money,TProv varchar(10),TPovN varchar(100)
+TPMay money,TPMayE money--,TProv varchar(10),TPovN varchar(100)
 );						
 INSERT INTO #ListaP
 SELECT DISTINCT L.Articulo,'Cate'=CASE WHEN RIGHT(A.Categoria,2) IS NULL THEN '' ELSE RIGHT(A.Categoria,2) END
@@ -18,10 +18,10 @@ SELECT DISTINCT L.Articulo,'Cate'=CASE WHEN RIGHT(A.Categoria,2) IS NULL THEN ''
 				,'MM'=CASE WHEN A.MargenMinimo IS NULL THEN 0 ELSE A.MargenMinimo END
 				,'MA'=CASE WHEN Ma.Precio IS NULL THEN 0 ELSE ROUND((Ma.Precio*1.16),2) END 
 				,'MAE'=CASE WHEN MaE.Precio IS NULL THEN 0 ELSE ROUND((MaE.Precio*1.16),2) END
-				,'Pro'= CASE WHEN A.Proveedor IS NULL THEN '' ELSE A.Proveedor END,'ProN'=CASE WHEN P.Nombre IS NULL THEN '' ELSE P.Nombre END
+				--,'Pro'= CASE WHEN A.Proveedor IS NULL THEN '' ELSE A.Proveedor END,'ProN'=CASE WHEN P.Nombre IS NULL THEN '' ELSE P.Nombre END
 				FROM ListaPreciosDUnidad AS L
 				INNER JOIN Art AS A ON L.Articulo=A.Articulo
-				LEFT JOIN Prov AS P ON A.Proveedor=P.Proveedor
+				--LEFT JOIN Prov AS P ON A.Proveedor=P.Proveedor
 				LEFT JOIN ArtUnidad AS AU ON L.Articulo=AU.Articulo AND L.Unidad=AU.Unidad				
 				LEFT JOIN ListaPreciosDUnidad AS PC ON L.Articulo=PC.Articulo AND L.Unidad=PC.Unidad AND PC.Lista='Precios de Compra'
 				LEFT JOIN ListaPreciosDUnidad AS Ma ON L.Articulo=Ma.Articulo AND L.Unidad=Ma.Unidad AND Ma.Lista='Mayoreo'
@@ -34,7 +34,7 @@ SELECT DISTINCT L.Articulo,'Cate'=CASE WHEN RIGHT(A.Categoria,2) IS NULL THEN ''
 				,'MM'=CASE WHEN A.MargenMinimo IS NULL THEN 0 ELSE A.MargenMinimo END 
 				,'MA'=CASE WHEN Ma.Precio IS NULL THEN 0 ELSE ROUND((Ma.Precio*1.16),2) END 
 				,'MAE'=CASE WHEN MaE.Precio IS NULL THEN 0 ELSE ROUND((MaE.Precio*1.16),2) END
-				,'Pro'= CASE WHEN A.Proveedor IS NULL THEN '' ELSE A.Proveedor END,'ProN'=CASE WHEN P.Nombre IS NULL THEN '' ELSE P.Nombre END
+				--,'Pro'= CASE WHEN A.Proveedor IS NULL THEN '' ELSE A.Proveedor END,'ProN'=CASE WHEN P.Nombre IS NULL THEN '' ELSE P.Nombre END
 				FROM ListaPreciosSubUnidad AS S
 				INNER JOIN Art AS A ON S.Articulo=A.Articulo
 				LEFT JOIN Prov AS P ON A.Proveedor=P.Proveedor
@@ -44,13 +44,13 @@ SELECT DISTINCT L.Articulo,'Cate'=CASE WHEN RIGHT(A.Categoria,2) IS NULL THEN ''
 				LEFT JOIN ListaPreciosSubUnidad AS MaE ON S.Articulo=MaE.Articulo AND S.Unidad=MaE.Unidad AND S.SubCuenta=MaE.SubCuenta AND MaE.Lista='Mayoreo Especial'				
 				WHERE LEFT(A.Rama,2)=@Ram AND A.Estatus ='ALTA' AND S.Unidad=A.UnidadCompra;
 
-SELECT * FROM #ListaP Order by TProv,TRam,TTT,TArt,TDes DESC;
+SELECT * FROM #ListaP Order by TArt-- TProv,TRam,TTT,TArt,TDes DESC;
 DROP TABLE #ListaP;
 
 END
 
 /*
 
-EXEC SP_ListaPrecioMayoreoArea @Ram='03'
+EXEC SP_ListaPrecioMayoreoArea @Ram='01'
 
 */
