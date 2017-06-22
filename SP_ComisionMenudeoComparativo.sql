@@ -6,7 +6,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 ALTER PROCEDURE [dbo].[SP_ComisionMenudeoComparativo] @Finicio DATE, @Ffinal DATE, @Sucursal VARCHAR(10)
---AS BEGIN
+AS BEGIN
 
 ----COMENTAR
 --DECLARE @Finicio DATE, @Ffinal DATE, @Sucursal VARCHAR(10)
