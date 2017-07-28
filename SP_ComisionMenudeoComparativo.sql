@@ -1,32 +1,33 @@
-USE [Assis]
-GO
-/****** Object:  StoredProcedure [dbo].[SP_ComisionMenudeoComparativo]    Script Date: 22/06/2017 01:54:46 p. m. ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-ALTER PROCEDURE [dbo].[SP_ComisionMenudeoComparativo] @Finicio DATE, @Ffinal DATE, @Sucursal VARCHAR(10)
-AS BEGIN
+--USE [Assis]
+--GO
+--/****** Object:  StoredProcedure [dbo].[SP_ComisionMenudeoComparativo]    Script Date: 22/06/2017 01:54:46 p. m. ******/
+--SET ANSI_NULLS ON
+--GO
+--SET QUOTED_IDENTIFIER ON
+--GO
+--ALTER PROCEDURE [dbo].[SP_ComisionMenudeoComparativo] @Finicio DATE, @Ffinal DATE, @Sucursal VARCHAR(10)
+--AS BEGIN
 
-----COMENTAR
---DECLARE @Finicio DATE, @Ffinal DATE, @Sucursal VARCHAR(10)
---SET @Finicio='2017-06-01'
---SET @Ffinal='2017-06-30'
---SET @Sucursal='7'
-----COMENTAR
+--COMENTAR
+DECLARE @Finicio DATE, @Ffinal DATE, @Sucursal VARCHAR(10)
+SET @Finicio='2017-07-01'
+SET @Ffinal='2017-07-31'
+SET @Sucursal='1'
+--COMENTAR
 
 DECLARE @ComisionMen TABLE(
 Agente varchar(10),Nombre varchar(100),Plaza varchar(20),VendidoActual money, VendidoAnterior money, Rama varchar(3),Area varchar(30)
 ,VendidoTotalActual money, VendidoTotalAnterior money, PorcentajeArea float,PorcentajeValor float,Estatus varchar(15)
 )
 INSERT INTO @ComisionMen 
-SELECT AoActual.Agente, 'Nombre'=CASE WHEN LEFT(P.Plaza,18)='ENCARGADDECORACION' THEN AoActual.Nombre+' (ENCARGADO DECORACION)'
-WHEN LEFT(P.Plaza,20)='ENCARGADOELECTRONICA' THEN AoActual.Nombre+' (ENCARGADO GENERAL)' WHEN LEFT(P.Plaza,17)='ENCARGADOMERCERIA' THEN AoActual.Nombre+' (ENCARGADO MERECERIA)'
+SELECT AoActual.Agente, 'Nombre'=CASE WHEN LEFT(P.Plaza,16)='ENCARGADODECORAC' THEN AoActual.Nombre+' (ENCARGADO DECORACION)'
+WHEN LEFT(P.Plaza,18)='ENCARGADOELECTRONI' THEN AoActual.Nombre+' (ENCARGADO GENERAL)' WHEN LEFT(P.Plaza,17)='ENCARGADOMERCERIA' THEN AoActual.Nombre+' (ENCARGADO MERECERIA)'
 WHEN LEFT(P.Plaza,13)='ENCARGADOROPA' THEN AoActual.Nombre+' (ENCARGADO ROPA)' WHEN LEFT(P.Plaza,14)='ENCARGADOTELAS' THEN AoActual.Nombre+' (ENCARGADO TELAS)' ELSE  AoActual.Nombre END,
 'Plaza'=CASE WHEN LEFT(P.Plaza,18)='VENDPISODECORACION' THEN '00' WHEN LEFT(P.Plaza,18)='VENDPISOELECTRONIC' THEN '04'
-WHEN LEFT(P.Plaza,18)='VENDEDPISOMERCERIA' THEN  '01' WHEN LEFT(P.Plaza,16)='VENDEDORPISOROPA' THEN '03'
-WHEN LEFT(P.Plaza,17)='VENDEDORPISOTELAS' THEN '02' WHEN LEFT(P.Plaza,18)='ENCARGADDECORACION' THEN '00 E'
-WHEN LEFT(P.Plaza,20)='ENCARGADOELECTRONICA' THEN '04 E' WHEN LEFT(P.Plaza,17)='ENCARGADOMERCERIA' THEN '01 E'
+WHEN LEFT(P.Plaza,17)='VENDPISOTELEFONIA' THEN '04'
+WHEN LEFT(P.Plaza,16)='VENDPISOMERCERIA' THEN  '01' WHEN LEFT(P.Plaza,12)='VENDPISOROPA' THEN '03'
+WHEN LEFT(P.Plaza,13)='VENDPISOTELAS' THEN '02' WHEN LEFT(P.Plaza,16)='ENCARGADODECORAC' THEN '00 E'
+WHEN LEFT(P.Plaza,18)='ENCARGADOELECTRONI' THEN '04 E' WHEN LEFT(P.Plaza,17)='ENCARGADOMERCERIA' THEN '01 E'
 WHEN LEFT(P.Plaza,13)='ENCARGADOROPA' THEN '03 E' WHEN LEFT(P.Plaza,14)='ENCARGADOTELAS' THEN '02 E'
 WHEN P.Plaza IS NULL THEN '' ELSE P.Plaza END  --ISNULL(P.Plaza,'')Plaza
 ,AoActual.VendidoActual,0,AoActual.Rama,AoActual.Area
@@ -46,7 +47,7 @@ FROM(SELECT VD.Agente,Ag.Nombre,V.Importe,V.Impuestos,VD.Cantidad,VD.Articulo,IS
 		WHEN VD.DescuentoLinea <> 0 THEN ((100 -VD.DescuentoLinea)/100)
 		WHEN VD.DescuentoLinea IS NULL THEN 1
 		ELSE 1 END,
-	'Rama'=CASE WHEN V.Concepto='Ventas Decoracion' THEN '00' WHEN LEFT(A.Rama,4) in ('0202','0229','0249','0265','0267','0269') THEN '00' ELSE left(A.Rama,2) END --Si es Decoracion poner una nueva rama
+	'Rama'=CASE WHEN V.Concepto='Ventas Decoracion' THEN '00' WHEN LEFT(A.Rama,4) in ('0202','0229','0249','0265','0267','0269','0323') THEN '00' ELSE left(A.Rama,2) END --Si es Decoracion poner una nueva rama
 	FROM Venta AS V
 	INNER JOIN VentaD AS VD ON V.ID=VD.ID
 	INNER JOIN ART AS A ON VD.Articulo=A.Articulo
@@ -88,7 +89,7 @@ FROM(
 			WHEN VD.DescuentoLinea <> 0 THEN ((100 -VD.DescuentoLinea)/100)
 			WHEN VD.DescuentoLinea IS NULL THEN 1
 			ELSE 1 END,
-			'Rama'=CASE WHEN V.Concepto='Ventas Decoracion' THEN '00' WHEN LEFT(A.Rama,4) in ('0202','0229','0249','0265','0267','0269') THEN '00' ELSE left(A.Rama,2) END --Si es Decoracion poner una nueva rama
+			'Rama'=CASE WHEN V.Concepto='Ventas Decoracion' THEN '00' WHEN LEFT(A.Rama,4) in ('0202','0229','0249','0265','0267','0269','0323') THEN '00' ELSE left(A.Rama,2) END --Si es Decoracion poner una nueva rama
 			FROM Venta AS V
 			INNER JOIN VentaD AS VD ON V.ID=VD.ID
 			INNER JOIN ART AS A ON VD.Articulo=A.Articulo
@@ -144,11 +145,11 @@ USING (
 --SELECT * FROM(
 SELECT *--,DatosArea.Rama,DatosArea.Area,DatosArea.VendidoTotalActual,DatosArea.VendidoTotalAnterior,DatosArea.PorcentajeArea,DatosArea.PorcentajeValor 
 FROM 
-(SELECT Age.Agente,'Nombre'=CASE WHEN LEFT(Pl.Plaza,18)='ENCARGADDECORACION' THEN Age.Nombre+' (ENCARGADO DECORACION)'
-WHEN LEFT(Pl.Plaza,20)='ENCARGADOELECTRONICA' THEN Age.Nombre+' (ENCARGADO GENERAL)' 
+(SELECT Age.Agente,'Nombre'=CASE WHEN LEFT(Pl.Plaza,16)='ENCARGADODECORAC' THEN Age.Nombre+' (ENCARGADO DECORACION)'
+WHEN LEFT(Pl.Plaza,18)='ENCARGADOELECTRONI' THEN Age.Nombre+' (ENCARGADO GENERAL)' 
 WHEN LEFT(Pl.Plaza,17)='ENCARGADOMERCERIA' THEN Age.Nombre+' (ENCARGADO MERECERIA)'WHEN LEFT(Pl.Plaza,13)='ENCARGADOROPA' THEN Age.Nombre+' (ENCARGADO ROPA)' 
 WHEN LEFT(Pl.Plaza,14)='ENCARGADOTELAS' THEN Age.Nombre+' (ENCARGADO TELAS)' ELSE  'Error Nombre' END
-,'PlazaC'=CASE  WHEN LEFT(Pl.Plaza,18)='ENCARGADDECORACION' THEN '00' WHEN LEFT(Pl.Plaza,20)='ENCARGADOELECTRONICA' THEN '04'
+,'PlazaC'=CASE  WHEN LEFT(Pl.Plaza,16)='ENCARGADODECORAC' THEN '00' WHEN LEFT(Pl.Plaza,18)='ENCARGADOELECTRONI' THEN '04'
 WHEN LEFT(Pl.Plaza,17)='ENCARGADOMERCERIA' THEN '01' WHEN LEFT(Pl.Plaza,13)='ENCARGADOROPA' THEN '03' 
 WHEN LEFT(Pl.Plaza,14)='ENCARGADOTELAS' THEN '02' ELSE 'Error plaza' END
 ,0'Vac',0'Van' 
@@ -157,7 +158,7 @@ INNER JOIN PersonalPropValor AS Per ON Age.Agente=Per.Valor AND Per.Rama='PER' A
 INNER JOIN Personal AS Pl ON Per.Cuenta=Pl.Personal 
 WHERE Age.SucursalEmpresa=@Sucursal and Pl.Estatus IN ('ALTA','Aspirante')
 --and Age.Agente in ('E121','E122','E120','e146')
-AND (LEFT(Plaza,18)='ENCARGADDECORACION' OR LEFT(Plaza,20)='ENCARGADOELECTRONICA' OR LEFT(Plaza,17)='ENCARGADOMERCERIA' OR LEFT(Plaza,13)='ENCARGADOROPA' OR LEFT(Plaza,14)='ENCARGADOTELAS'))Encargados
+AND (LEFT(Plaza,16)='ENCARGADODECORAC' OR LEFT(Plaza,18)='ENCARGADOELECTRONI' OR LEFT(Plaza,17)='ENCARGADOMERCERIA' OR LEFT(Plaza,13)='ENCARGADOROPA' OR LEFT(Plaza,14)='ENCARGADOTELAS'))Encargados
 INNER JOIN (select distinct Rama,Area,VendidoTotalActual,VendidoTotalAnterior,PorcentajeArea,PorcentajeValor from @ComisionMen)DatosArea
 ON Encargados.PlazaC=DatosArea.Rama 
 --)EncargadosFin
@@ -188,7 +189,7 @@ WHEN LEFT(Plaza,2)=Rama THEN PorcentajeValor*VendidoActual
 ELSE VendidoActual*0.01 END
 FROM @ComisionMen WHERE (LEFT(Plaza,5) <> 'CAJER') AND (LEFT(Plaza,8) <> 'ENCARGAD') AND (LEFT(Nombre,11) <>'AUTOSERVICI')  ORDER BY Rama,Nombre
 */
-END
+--END
 
 --
 /*
