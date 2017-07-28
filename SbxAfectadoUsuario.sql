@@ -8,12 +8,12 @@ GO
 --delete from ErpErrorLog where TableID in(select ID from saledocument where Folio in(@Folio))
 
 SELECT saledocument.ErpSendStatusID,saledocument.ErpDocumentID,saledocument.Folio,saledocument.ID FROM saledocument 
-WHERE ID in(SELECT tableID FROM ErpErrorLog WHERE ErrorDescription like 'El Movimiento ya fue afectado por otro usuario Factura POS%')
-SELECT ID FROM ErpErrorLog WHERE ErrorDescription like 'El Movimiento ya fue afectado por otro usuario Factura POS%'
+WHERE ID in(SELECT tableID FROM ErpErrorLog WHERE ErrorDescription like 'El Movimiento ya fue afectado por otro usuario%')
+SELECT ID FROM ErpErrorLog WHERE ErrorDescription like 'El Movimiento ya fue afectado por otro usuario%'
 --////////////////////////////Actualizacion y borrado del registro ///////////////////////////////////////////////////
 /*
 UPDATE SaleDocument set ErpSendStatusID=3,ErpDocumentID='AfectacionManual'
-WHERE ID in(SELECT tableID FROM ErpErrorLog WHERE ErrorDescription like 'El Movimiento ya fue afectado por otro usuario Factura POS%')
-DELETE from ErpErrorLog WHERE ErrorDescription like 'El Movimiento ya fue afectado por otro usuario Factura POS%'
+WHERE ID in(SELECT tableID FROM ErpErrorLog WHERE ErrorDescription like 'El Movimiento ya fue afectado por otro usuario%')
+DELETE from ErpErrorLog WHERE ErrorDescription like 'El Movimiento ya fue afectado por otro usuario%'
 */
 --////////////////////////////////////////FIN////////////////////////////////////////////////

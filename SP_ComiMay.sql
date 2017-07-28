@@ -38,8 +38,7 @@ INSERT INTO #ObD --- Ventas Mayoreo por contado o Credito
 	INNER JOIN VentaD AS VD ON V.ID=VD.ID
 	INNER JOIN ART AS A ON VD.Articulo=A.Articulo
 	INNER JOIN Sucursal AS S ON V.Sucursal=S.Sucursal
-	INNER JOIN Agente AS Ag ON V.Agente=Ag.Agente --BORRAR
-	             and V.Agente in ('E147','E99') --asta aqui BORRAR
+	INNER JOIN Agente AS Ag ON V.Agente=Ag.Agente 
 	LEFT JOIN Usuario AS U ON V.Usuario=U.Usuario
 	WHERE 
 	 VD.ID IN(SELECT V.ID
@@ -51,7 +50,7 @@ INSERT INTO #ObD --- Ventas Mayoreo por contado o Credito
 					AND CAST(V.FechaEmision AS DATE) BETWEEN @Finicio AND @Ffinal
 					)
 				
-UNION ALL
+UNION ALL --PARA MAYTELE
 SELECT Vf.ID,V.Agente,A1.Nombre,V.Usuario,U1.Nombre,'N',CAST(Vf.FechaEmision AS DATE),Vf.Sucursal,S.Nombre,Vf.Importe,Vf.Impuestos,Vd.Cantidad,Vd.Articulo,
 'Des'=CASE WHEN Vd.DescuentoLinea IS NULL THEN 1 WHEN Vd.DescuentoLinea=0 THEN 1 ELSE (100-Vd.DescuentoLinea)/100 END ,
 'Subc'=CASE WHEN Vd.SubCuenta IS NULL THEN '' ELSE Vd.SubCuenta END,Vd.Precio,LEFT(A0.Rama,2),LEFT(Vf.Condicion,7)
@@ -61,8 +60,7 @@ INNER JOIN MovFlujo AS M2 ON M2.Empresa='ASSIS' AND M2.OModulo='VTAS' AND M2.Can
 INNER JOIN MovFlujo AS M3 ON M3.Empresa='ASSIS' AND M3.OModulo='VTAS' AND M3.Cancelado=0 AND M3.DMov='Chequeo y Empaque' AND M3.OID=M2.DID AND M3.OMovID=M2.DMovID
 INNER JOIN MovFlujo AS M4 ON M4.Empresa='ASSIS' AND M4.OModulo='VTAS' AND M4.Cancelado=0 AND M4.DMov='Factura' AND M4.OID=M3.DID AND M4.OMovID=M3.DMovID
 INNER JOIN Venta AS Vf ON Vf.ID=M4.DID AND Vf.MovID=M4.DMovID AND Vf.Empresa='ASSIS' AND Vf.Estatus='CONCLUIDO' AND CAST(Vf.FechaEmision AS DATE) BETWEEN @Finicio AND @Ffinal
-INNER JOIN Agente AS A1 ON V.Agente=A1.Agente --BORRAR
-	       and V.Agente in ('E147','E99') --asta aqui BORRAR
+INNER JOIN Agente AS A1 ON V.Agente=A1.Agente
 LEFT JOIN Usuario AS U1 ON V.Usuario=U1.Usuario
 INNER JOIN Sucursal AS S ON Vf.Sucursal=S.Sucursal
 INNER JOIN VentaD AS Vd ON Vf.ID=Vd.ID
@@ -80,8 +78,7 @@ INSERT INTO #ObD --Devoluciones que restan en negativo
 	INNER JOIN VentaD AS VD ON V.ID=VD.ID
 	INNER JOIN ART AS A ON VD.Articulo=A.Articulo
 	INNER JOIN Sucursal AS S ON V.Sucursal=S.Sucursal
-	INNER JOIN Agente AS Ag ON V.Agente=Ag.Agente --BORRAR
-	               and V.Agente in ('E147','E99') --asta aqui BORRAR
+	INNER JOIN Agente AS Ag ON V.Agente=Ag.Agente 
 	LEFT JOIN Usuario AS U ON V.Usuario=U.Usuario
 	WHERE 
 	 VD.ID IN(SELECT V.ID
@@ -158,9 +155,6 @@ INSERT INTO #TEND
 SELECT TTage,TTNag,0,0,SUM(TTConI),SUM(TTCreI),TTare,TTArn,TTco,TTtip,0
 FROM #SumaC GROUP BY TTage,TTNag,TTare,TTArn,TTco,TTtip ORDER BY TTtip,TTNag,TTare;
 
---borrar+
---select * from #TEND
---borrar
 --SELECT * FROM #TEND WHERE TTtare IN ('01','02','03','04','00')
 --AND (TTIP = 'AGENTE' OR (TTIP = 'Usuario' AND TTtage IN ('MAYTELE01','MAYTELE02','MAYTELE03')))
 -- ORDER BY  TTIP,TTtNag,TTtare; 
@@ -183,9 +177,6 @@ UPDATE SET TARGET.TotalCon=SOURCE.Cont, TARGET.TotalCre=SOURCE.Cret;
  
 SELECT * FROM #TEND WHERE TTtare IN ('01','02','03','04','00')
 AND (TTIP = 'AGENTE' OR (TTIP = 'Usuario' AND TTtage IN ('MAYTELE01','MAYTELE02','MAYTELE03')))
---borrar
-and TTtage in ('E147','E99')
---borrar
 ORDER BY  TTIP,TTtNag,TTtare; 
  
 DROP TABLE #ObD

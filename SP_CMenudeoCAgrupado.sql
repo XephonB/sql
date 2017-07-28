@@ -1,20 +1,20 @@
---USE [Assis]
---GO
---/****** Object:  StoredProcedure [dbo].[SP_CMenudeoCAgrupado]    Script Date: 07/07/2017 10:07:13 a. m. ******/
---SET ANSI_NULLS ON
---GO
---SET QUOTED_IDENTIFIER ON
---GO
+USE [Assis]
+GO
+/****** Object:  StoredProcedure [dbo].[SP_CMenudeoCAgrupado]    Script Date: 28/07/2017 12:23:58 p. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
---ALTER PROCEDURE [dbo].[SP_CMenudeoCAgrupado] @Finicio DATE, @Ffinal DATE, @Sucursal VARCHAR(10)
---AS BEGIN
-
---COMENTAR
-DECLARE @Finicio DATE, @Ffinal DATE, @Sucursal VARCHAR(10)
-SET @Finicio='2017-01-01'
-SET @Ffinal='2017-01-31'
-SET @Sucursal='1'
---COMENTAR
+ALTER PROCEDURE [dbo].[SP_CMenudeoCAgrupado] @Finicio DATE, @Ffinal DATE, @Sucursal VARCHAR(10)
+AS BEGIN
+s
+----COMENTAR
+--DECLARE @Finicio DATE, @Ffinal DATE, @Sucursal VARCHAR(10)
+--SET @Finicio='2017-07-01'
+--SET @Ffinal='2017-07-31'
+--SET @Sucursal='7'
+----COMENTAR
 
 DECLARE @ComisionMen TABLE(
 Agente varchar(10),Nombre varchar(100),Plaza varchar(20),VendidoActual money, VendidoAnterior money, Rama varchar(3),Area varchar(30)
@@ -28,7 +28,7 @@ WHEN LEFT(P.Plaza,13)='ENCARGADOROPA' THEN AoActual.Nombre+' (ENCARGADO ROPA)' W
 WHEN LEFT(P.Plaza,17)='VENDPISOTELEFONIA' THEN '04'
 WHEN LEFT(P.Plaza,16)='VENDPISOMERCERIA' THEN  '01' WHEN LEFT(P.Plaza,12)='VENDPISOROPA' THEN '03'
 WHEN LEFT(P.Plaza,13)='VENDPISOTELAS' THEN '02' WHEN LEFT(P.Plaza,16)='ENCARGADODECORAC' THEN '00 E'
-WHEN LEFT(P.Plaza,20)='ENCARGADOELECTRONICA' THEN '04 E' WHEN LEFT(P.Plaza,17)='ENCARGADOMERCERIA' THEN '01 E'
+WHEN LEFT(P.Plaza,18)='ENCARGADOELECTRONI' THEN '04 E' WHEN LEFT(P.Plaza,17)='ENCARGADOMERCERIA' THEN '01 E'
 WHEN LEFT(P.Plaza,13)='ENCARGADOROPA' THEN '03 E' WHEN LEFT(P.Plaza,14)='ENCARGADOTELAS' THEN '02 E'
 WHEN P.Plaza IS NULL THEN '' ELSE P.Plaza END  --ISNULL(P.Plaza,'')Plaza
 ,AoActual.VendidoActual,0,AoActual.Rama,AoActual.Area
@@ -121,7 +121,7 @@ GROUP BY AoPasado.Rama
 ON AoActual.Rama = Tsuma.Rama--Ligar Nombre y Rama de las dos selects
 
 --select 'UNO',* from @ComisionMen
---/////////////terminar aca abajo los porcentajes
+----/////////////terminar aca abajo los porcentajes
 UPDATE a 
 SET VendidoTotalActual=Sumas.VendidoActual, --VendidoTotalAnterior=Sumas.VendidoAnterior , 
 PorcentajeArea=Sumas.PorcentajeAr
@@ -170,7 +170,6 @@ INSERT VALUES (SOURCE.Agente,SOURCE.Nombre,(SOURCE.PlazaC+' E'),SOURCE.Vac,SOURC
 ;
 
  --select * from @ComisionMen 
-
 SELECT  Agrupado.Agente,Agrupado.Nombre, SUM(ComisionC)Comision FROM(
 SELECT * FROM(
 SELECT Agente,Nombre,Area,VendidoActual,VendidoTotalAnterior,VendidoTotalActual,'PlazaE'=CASE WHEN LEFT(Plaza,2)=Rama AND LEFT(Plaza,2)='00' THEN 'DECORACION'
@@ -182,8 +181,8 @@ WHEN LEFT(Plaza,2)=Rama THEN PorcentajeValor*VendidoActual
 ELSE VendidoActual*0.01 END, PorcentajeValor
 FROM @ComisionMen WHERE Estatus<>'' AND ((LEFT(Plaza,5) <> 'CAJER') AND (LEFT(Plaza,8) <> 'ENCARGAD') AND (LEFT(Nombre,11) <>'AUTOSERVICI')) )Final
 ---WHERE ComisionC<>0
- --ORDER BY Area,Nombre 
- )Agrupado GROUP BY Agente,Nombre
+-- ORDER BY Area,Nombre
+)Agrupado GROUP BY Agente,Nombre
 
 /*
 SELECT *,'Comision'=CASE WHEN RIGHT(Plaza,1)='E' AND LEFT(Plaza,2)=Rama AND PorcentajeValor>=0.01 THEN PorcentajeValor*VendidoTotalActual 
@@ -192,7 +191,7 @@ WHEN LEFT(Plaza,2)=Rama THEN PorcentajeValor*VendidoActual
 ELSE VendidoActual*0.01 END
 FROM @ComisionMen WHERE (LEFT(Plaza,5) <> 'CAJER') AND (LEFT(Plaza,8) <> 'ENCARGAD') AND (LEFT(Nombre,11) <>'AUTOSERVICI')  ORDER BY Rama,Nombre
 */
---END
+END
 
 --
 /*

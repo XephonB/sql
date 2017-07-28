@@ -12,7 +12,7 @@
 DECLARE @Finicio DATE, @Ffinal DATE, @Sucursal VARCHAR(10)
 SET @Finicio='2017-07-01'
 SET @Ffinal='2017-07-31'
-SET @Sucursal='1'
+SET @Sucursal='7'
 --COMENTAR
 
 DECLARE @ComisionMen TABLE(
