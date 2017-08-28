@@ -12,7 +12,7 @@ SELECT Importe,Saldo,FechaEmision,Vencimiento,MovID,Mov,EnviarA,Nombre,
 'MovPago'=CASE WHEN Condicion='Contado' THEN Condicion ELSE MovPago END,MovIDPago
  FROM(
 	SELECT (Venta.Importe+Venta.Impuestos)Importe,CAST(Venta.FechaEmision AS DATE)FechaEmision,CAST(Venta.Vencimiento AS date)Vencimiento,Venta.MovID,Venta.Mov,ISNULL(Venta.EnviarA,'')EnviarA,ISNULL(CteEnviarA.Nombre,'')Nombre,Venta.Estatus,Venta.Condicion
-	,ISNULL((SELECT C.Saldo FROM Cxc C WHERE C.MovID=Venta.MovID),'')Saldo
+	,ISNULL((SELECT C.Saldo FROM Cxc C WHERE C.MovID=Venta.MovID AND C.ID=Venta.ID),'')Saldo
 	--,MF1.DID,MF1.DMovID--BORRAR
 	,ISNULL((SELECT Estatus FROM Cxc WHERE ID=MF1.DID),'')EstatusCxc
 	,ISNULL(MF2.DMovID,'')MovIDPago,ISNULL(MF2.DMov,'')MovPago --Resultado de lo pagado
@@ -27,5 +27,5 @@ ORDER BY FechaEmision,MovID --MAY26422 --1556574,MAY32316
 END
 
 /*
-exec SP_VentasHaffir2 @Finicio='2016-08-12',@Ffinal='2016-08-12'
+exec SP_VentasHaffir2 @Finicio='2017-07-07',@Ffinal='2017-07-10'
 */
