@@ -4,19 +4,19 @@
 -------////////////TRY ME /////////////////////////
 DECLARE @FechaI date, @FechaF date
 SET @FechaI='2016-12-01'
-SET @FechaF='2017-01-31'
+SET @FechaF='2017-03-31'
 -------////////////TRY ME ////////////////////////
 ---VALIDAR LONGITUD DE CAMPOS Y FLOAT POR MONEY?
-declare @Fecha varchar(100), @ImpSinIva money, @CostoTotal money, @Cliente varchar(10), @CNombre varchar(100),@Categoria varchar(50),@Agente varchar(10),@ANombre varchar(100)
+declare @Fecha varchar(100), @ImpSinIva money, @CostoTotal money, @Cliente varchar(10), @CNombre varchar(100),@Categoria varchar(50),@Ruta varchar(50),@Agente varchar(10),@ANombre varchar(100)
 
-CREATE TABLE #Temporal( Cliente varchar(10),CNombre varchar(100),Categoria varchar(50),Agente varchar(10),Anombre varchar(100) )
+CREATE TABLE #Temporal( Cliente varchar(10),CNombre varchar(100),Categoria varchar(50),Ruta varchar(50),Agente varchar(10),Anombre varchar(100) )
 CREATE TABLE #Columns( ColumnasFecha varchar(10) )
 
 DECLARE Ccodigin CURSOR FAST_FORWARD READ_ONLY FOR
 
-SELECT (cast(Ao as varchar(5))+cast(Mes as varchar(4)))Fecha,SUM(ImpSinIva)'ImpSinIva',SUM(CostoTotal)'CostoTotal',Cliente,CNombre,Categoria,Agente,ANombre  FROM (
+SELECT (cast(Ao as varchar(5))+cast(Mes as varchar(4)))Fecha,SUM(ImpSinIva)'ImpSinIva',SUM(CostoTotal)'CostoTotal',Cliente,CNombre,Categoria,Ruta,Agente,ANombre  FROM (
 SELECT YEAR(Venta.FechaEmision)'Ao',MONTH(Venta.FechaEmision)'Mes',((Venta.Importe)*MovTipo.Factor)'ImpSinIva',Venta.CostoTotal 
-,Cte.Cliente,Cte.Nombre'CNombre',Cte.Categoria,Cte.Agente, Agente.Nombre'ANombre'
+,Cte.Cliente,Cte.Nombre'CNombre',Cte.Categoria,Cte.Ruta,Cte.Agente, Agente.Nombre'ANombre'
 FROM Venta with(nolock)
 INNER JOIN MovTipo with(nolock) ON Venta.Mov=MovTipo.Mov AND MovTipo.Modulo='VTAS' 
 INNER JOIN Cte with(nolock) ON Venta.Cliente=Cte.Cliente --AND Cte.ListaPreciosEsp in ('Mayoreo Especial','Mayoreo','Expo Mayoreo') 
@@ -25,12 +25,12 @@ WHERE  Venta.Estatus='CONCLUIDO' AND Venta.Mov in ('Factura','Factura Prom. Plaz
 AND cast(Venta.FechaEmision AS date) between @FechaI and @FechaF AND Cte.ListaPreciosEsp in ('Mayoreo Especial','Mayoreo','Expo Mayoreo') 
 )t1  
 --WHERE Agente='E347' --borrarr
-GROUP BY Ao,Mes,Cliente,CNombre,Categoria,Agente,ANombre
+GROUP BY Ao,Mes,Cliente,CNombre,Categoria,Ruta,Agente,ANombre
 order by Ao,mes,CNombre
 
 
 OPEN Ccodigin
-	FETCH NEXT FROM Ccodigin INTO @Fecha, @ImpSinIva, @CostoTotal, @Cliente, @CNombre,@Categoria,@Agente,@ANombre
+	FETCH NEXT FROM Ccodigin INTO @Fecha, @ImpSinIva, @CostoTotal, @Cliente, @CNombre,@Categoria,@Ruta,@Agente,@ANombre
 
 		WHILE @@FETCH_STATUS = 0
 			BEGIN --//Comparar la fecha si existe como columna en la tabla  --INICIO DE WHILE
@@ -39,7 +39,7 @@ OPEN Ccodigin
 					 IF @Cliente=(SELECT Cliente FROM #Temporal WHERE Cliente=@Cliente)
 						 EXEC ('UPDATE #Temporal SET ImpSinIva'+@Fecha+' = '+@ImpSinIva+' , CostoTotal'+@Fecha+' = '+@CostoTotal+' WHERE Cliente='+''''+@Cliente+'''')
 					ElSE--Si no Existe , insertamos los datos
-						EXEC ('INSERT INTO #Temporal (Cliente,CNombre,Categoria,Agente,Anombre,ImpSinIva'+@Fecha+',CostoTotal'+@Fecha+') values ('+''''+@Cliente+''''+','+''''+@CNombre+''''+','+''''+@Categoria+''''+','+''''+@Agente+''''+','+''''+@ANombre+''''+','+@ImpSinIva+','+@CostoTotal+')')
+						EXEC ('INSERT INTO #Temporal (Cliente,CNombre,Categoria,Ruta,Agente,Anombre,ImpSinIva'+@Fecha+',CostoTotal'+@Fecha+') values ('+''''+@Cliente+''''+','+''''+@CNombre+''''+','+''''+@Categoria+''''+','+''''+@Ruta+''''+','+''''+@Agente+''''+','+''''+@ANombre+''''+','+@ImpSinIva+','+@CostoTotal+')')
 					END--FIN DEL IF PRINCIPAL
 				ELSE --Si no hay fecha como columna, lo creamos y completamos el registro de columnas
 					BEGIN--INICIO DEL ELSE
@@ -49,10 +49,10 @@ OPEN Ccodigin
 					IF @Cliente=(SELECT Cliente FROM #Temporal WHERE Cliente=@Cliente)
 						 EXEC ('UPDATE #Temporal SET ImpSinIva'+@Fecha+' = '+@ImpSinIva+' , CostoTotal'+@Fecha+' = '+@CostoTotal+' WHERE Cliente='+''''+@Cliente+'''')
 					ElSE -- si no encontramos el cliente lo insertamos
-						EXEC ('INSERT INTO #Temporal (Cliente,CNombre,Categoria,Agente,Anombre,ImpSinIva'+@Fecha+',CostoTotal'+@Fecha+') values ('+''''+@Cliente+''''+','+''''+@CNombre+''''+','+''''+@Categoria+''''+','+''''+@Agente+''''+','+''''+@ANombre+''''+','+@ImpSinIva+','+@CostoTotal+')')
+						EXEC ('INSERT INTO #Temporal (Cliente,CNombre,Categoria,Ruta,Agente,Anombre,ImpSinIva'+@Fecha+',CostoTotal'+@Fecha+') values ('+''''+@Cliente+''''+','+''''+@CNombre+''''+','+''''+@Categoria+''''+','+''''+@Ruta+''''+','+''''+@Agente+''''+','+''''+@ANombre+''''+','+@ImpSinIva+','+@CostoTotal+')')
 					END--FIN DEL ELSE
 
-			FETCH NEXT FROM Ccodigin INTO @Fecha, @ImpSinIva, @CostoTotal, @Cliente, @CNombre,@Categoria,@Agente,@ANombre --Seguimos con el siguiente renglon
+			FETCH NEXT FROM Ccodigin INTO @Fecha, @ImpSinIva, @CostoTotal, @Cliente, @CNombre,@Categoria,@Ruta,@Agente,@ANombre --Seguimos con el siguiente renglon
 			
 		 END--FIN DE WHILE
 	CLOSE Ccodigin;
